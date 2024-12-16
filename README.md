@@ -7,7 +7,7 @@ This repository contains code for LLM-based cutting plane separator configuratio
 
 (2) **Add OpenAI API access information**. Create a file called `.env` and add two lines: the first `OPENAI_API_KEY="{key}"` gives your (personal) API access key, while the second `OPENAI_ORG="{org}"` gives the organization that is billed for queries. These will be read into the Python environment automatically.
 
-(3) **Download MILP datasets**. Download the data folder available here [need some sort of public storage] and copy its contents into the empty `data/` directory.
+(3) **Download MILP datasets**. Download the data folder available [here](https://drive.google.com/drive/folders/1-0hPfbFqa-O2Qg1gy3WDIbfePQuTnmNb?usp=sharing) and copy its contents into the empty `data/` directory.
 
 ## Generating separator configurations
 `generate_config.sh` executes code to generate llm-based configurations (`config_generation/llm.py`), while `random_search.sh` executes code to generate the best configuration found during the random search procedure (`config_generation/random_search.py`).
