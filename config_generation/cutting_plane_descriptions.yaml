@@ -1,0 +1,656 @@
+## List of Gurobi Cutting Plane options
+separators:
+
+- name: "Clique"
+  solvers:
+    "Gurobi": "CliqueCuts"
+    "SCIP": "clique"
+  description: >
+    ### Clique Cutting Planes:
+
+    **What They Are**:
+    Clique cutting planes are a type of valid inequality derived from the set-packing formulation in integer programming,
+    particularly useful in problems involving binary variables. The inequalities are based on identifying cliques in a 
+    conflict graph representation of the problem. A clique is a subset of mutually adjacent vertices in a graph, 
+    representing a set of constraints that cannot be simultaneously satisfied. The corresponding clique cutting planes 
+    exclude infeasible solutions by enforcing that only one element from each clique can be selected.
+    
+    **Constraints/Structures They Operate On**:
+    Clique cutting planes are applicable in problems where the constraints can be modeled using a conflict graph.
+    This is common in set-packing problems, where the constraints require selecting a subset of non-overlapping items.
+    The structure of the problem needs to allow for the identification of cliques in the graph, making the method
+    particularly suitable for 0-1 integer programming problems where constraints are naturally binary.
+
+    **Applications**:
+    Clique cutting planes are especially useful in:
+    (1) **Set-Packing Problems**: Where the goal is to select a subset of items such that no pair of selected items conflict.
+    (2) **Graph-based Problems**: Such as the maximum independent set problem, where the objective is to find the largest set 
+    of non-adjacent vertices in a graph.
+    (3) **General Mixed-Integer Programming**: In any scenario where the constraints can be represented through a conflict graph,
+    clique cuts can be applied to tighten the formulation.
+
+    **Computational Demand**:
+    Computationally, clique cutting planes can be demanding because finding cliques in a graph is a combinatorial problem.
+    While the identification of small cliques may be feasible, larger or more complex graphs can make the generation of
+    clique cuts expensive. Furthermore, solving the separation problem for clique inequalities (i.e., identifying violated clique constraints)
+    is computationally intensive, particularly in dense graphs where cliques are numerous and overlapping. Despite this,
+    clique cuts are often incorporated into branch-and-cut algorithms, where their strength in tightening the LP relaxation
+    justifies their computational cost
+
+- name: "Cover"
+  solvers:
+    "Gurobi": "CoverCuts"
+  description: >
+    ### Cover Cutting Planes:
+
+    **What They Are**:  
+    Cover cutting planes are a type of valid inequality derived from knapsack problems, specifically when the feasible set
+    includes a cover. A cover is a subset of variables whose total exceeds the knapsack's capacity, meaning that not all
+    variables in this subset can be selected simultaneously. The cover inequality is used to tighten the linear relaxation
+    by forbidding these infeasible combinations of variables.
+
+    **Constraints/Structures They Operate On**:  
+    Cover cuts apply primarily to 0-1 knapsack constraints, which are commonly encountered in various integer programming
+    problems. The constraints usually involve binary variables representing decisions (e.g., whether to include an item in a knapsack)
+    and a capacity constraint that must be respected. The cut identifies a subset of items (a cover) that collectively violate the
+    constraint and formulates an inequality to exclude this infeasible combination.
+
+    **Applications**:  
+    Cover cutting planes are useful in:
+    (1) **Knapsack Problems**: Common in resource allocation, logistics, and combinatorial optimization.
+    (2) **Set Covering Problems**: Where the goal is to cover all elements of a set with the fewest subsets.
+    (3) **General Mixed-Integer Programming (MIP)**: Especially when the problem has knapsack-like constraints, making cover cuts
+    effective in improving the linear relaxation.
+
+    **Computational Demand**:  
+    The computation of cover cuts is relatively efficient compared to other cutting-plane methods. The process typically involves
+    identifying covers, which can be done using greedy algorithms or other heuristics, followed by generating the corresponding
+    inequalities. While lifting procedures to strengthen these cuts can increase complexity, the basic generation of cover cuts
+    is not computationally intensive."
+
+- name: "FlowCover"
+  solvers:
+    "Gurobi": "FlowCoverCuts"
+    "SCIP": "aggregation"
+  description: >
+    ### Flow Cover Cutting Planes:
+
+    Flow cover cuts are a type of cutting plane derived from valid inequalities used to tighten the linear relaxations of
+    mixed-integer programming (MIP) problems, particularly for binary single-node flow sets. They are useful in network design
+    and fixed charge problems, where variables can represent flows subject to upper bounds and binary decisions.
+
+    Flow cover inequalities operate on constraints involving continuous flow variables and binary variables. These inequalities
+    are often applied to problems like the fixed-charge network design problem and mixed-integer flow problems. Computationally,
+    finding the most violated flow cover cut can be done through heuristic algorithms such as solving a knapsack problem, which
+    is relatively efficient but still requires careful implementation for scalability in large MIP problems.
+
+- name: "Flow Path"
+  solvers:
+    "Gurobi": "FlowPathCuts"
+    "SCIP": "mcf"
+  description: >
+    ### Flow Path Cutting Planes:
+
+    Flow path cuts are valid inequalities used to strengthen the linear relaxation of mixed-integer programs, specifically
+    for problems involving fixed charge networks. They help in modeling flow through a sequence of nodes where fixed charges
+    are incurred if any flow occurs along a path.
+
+    Flow path inequalities operate on constraints related to fixed charge paths, where binary and continuous variables govern
+    the flow through a network. These cuts are particularly useful in fixed charge network design and lot-sizing problems.
+    However, the computational consideration is that the structure exploited by these cuts is very specific, meaning they
+    are only applicable to certain problem types.
+
+- name: "GUB Cover"
+  solvers:
+    "Gurobi": "GUBCoverCuts"
+  description: >
+    ### Generalized Upper Bound (GUB) Cover Cutting Planes:
+
+    **What They Are**:  
+    Generalized Upper Bound (GUB) cover cutting planes are a type of cutting plane derived from GUB constraints, which are
+    often encountered in mixed-integer programming problems. A GUB constraint limits the sum of a specific subset of variables
+    to an upper bound. The GUB cover cut is generated by identifying subsets of variables (covers) that, if all selected, would
+    exceed the GUB limit. The cutting plane then excludes such infeasible combinations, tightening the linear relaxation of the problem.
+
+    **Constraints/Structures They Operate On**:  
+    GUB cover cuts operate on constraints that involve a generalized upper bound on a group of variables. These constraints appear in
+    problems where there is a limit on the total number of items that can be selected from a group. For example, in facility location
+    or resource allocation problems, GUB constraints might limit the total number of facilities that can be opened or resources that can be
+    utilized. The structure of the problem must allow for the identification of groups of variables that are collectively bounded by a
+    GUB constraint.
+
+    **Applications**:  
+    (1) **Facility Location Problems**: Where the goal is to choose a subset of locations while staying within a predefined capacity limit.
+    (2) **Resource Allocation Problems**: In which resources must be distributed among competing demands under an upper bound constraint.
+    (3) **General Mixed-Integer Programming (MIP)**: Applicable wherever GUB constraints appear, making these cuts effective in tightening
+    the formulation and improving the solver's performance.
+
+    **Computational Demand**:  
+    Computationally, generating GUB cover cuts is relatively efficient compared to more complex cutting-plane methods. The process involves
+    identifying covers and creating corresponding inequalities. The complexity can increase if lifting procedures are used to strengthen the
+    cuts, but the basic GUB cover cuts are computationally manageable, making them suitable for inclusion in branch-and-cut algorithms without
+    a significant increase in computation time."  
+
+- name: "Implied"
+  solvers:
+    "Gurobi": "ImpliedCuts"
+    "SCIP": "impliedbounds"
+  description: >
+    ### Implied bound cuts:
+
+    **What They Are**:
+    Implied bound cuts are cutting planes that leverage implications between binary and continuous variables to restrict the feasible region
+    of a Mixed-Integer Linear Programming (MILP) problem. They enforce tighter constraints by exploiting logical relationships, such as when
+    a binary variable limits the upper or lower bound of a continuous variable.
+
+    **Constraints they operate on**:
+    Implied bound cuts are used in problems where there are logical implications between binary and continuous variables. For example, if a
+    binary variable is 0, it may impose an upper bound on a continuous variable, and if it is 1, it may relax that bound.
+
+    **Applications**: 
+    These cuts are particularly useful in **network design**, **facility location**, and **production planning** problems, where binary
+    decisions (on/off) affect continuous variables (e.g., capacity or production levels).
+
+    **Computational considerations**:
+    Implied bound cuts are relatively lightweight to compute, as they exploit simple logical conditions, making them computationally efficient.
+    While not as impactful as more complex cuts like lift-and-project, they still contribute significantly to improving LP relaxation, particularly
+    in models with clear binary-continuous variable interactions."
+
+- name: "InfProof"
+  solvers:
+    "Gurobi": "InfProofCuts"
+  description: >
+    ### Infeasibility Proof (InfProof) Cutting Planes:
+    
+    **What They Are**:
+    InfProofCut cutting planes focus on improving the solver's ability to handle infeasibility by generating cuts that provide proof of 
+    infeasibility for certain fractional solutions. These cuts help tighten the feasible region by eliminating solutions that are proven 
+    to be infeasible.
+
+    **Constraints/Structures They Operate On**:
+    InfProof cuts are based on the idea of generating valid inequalities that demonstrate infeasibility in specific fractional solutions. 
+    These proofs typically result from analyzing the structure of the problem and identifying regions where no feasible integer solution 
+    can exist, even though the relaxed (continuous) solution may suggest otherwise.
+
+    **Applications**:
+    InfProof cuts are particularly beneficial in:
+    (1) **Large-scale MIP problems**: Where infeasibility may arise in large, complex solution spaces, and InfProof cuts help to quickly
+    eliminate infeasible regions.
+    (2) **Feasibility-driven MIP models**: Problems that are highly sensitive to infeasibility, such as scheduling or network flow problems,
+    where proving infeasibility can save significant computation time by reducing the size of the search space.
+    (3) **Cutting-edge combinatorial problems**: Complex combinatorial optimization problems where infeasibility is common in fractional
+    solutions and cutting-plane methods are crucial for narrowing the feasible region.
+    These problems benefit from the InfProof cuts because they focus on efficiently eliminating infeasible regions that might otherwise 
+    remain unnoticed.
+
+    **Computational Considerations**:
+    Generating InfProof cuts requires identifying infeasible fractional solutions and proving that they are not part of the integer
+    feasible region. This process can add computational overhead, but the resulting cuts can drastically reduce the search space and
+    improve solver performance. InfProof cuts are particularly effective in improving performance for difficult MIP problems that feature
+    complex infeasibility issues. While the additional computational cost of generating these cuts might slow down the solver in the short
+    term, the reduction in search space leads to faster convergence in the long term.
+
+- name: "Lift-and-Project"
+  solvers:
+    "Gurobi": "LiftProjectCuts"
+  description: >
+    ### Lift-and-Project Cutting Planes:
+
+    **What They Are**:
+    Lift-and-project cuts operate by lifting the problem into a higher-dimensional space, creating stronger constraints, and then projecting
+    them back onto the original space, generating cuts that eliminate fractional solutions.
+
+    **Constraints they operate on**:
+    Lift-and-project cuts work on disjunctions, particularly involving binary (0-1) variables. By lifting the constraints formed by these
+    binary variables and projecting them, the method eliminates fractional solutions in the LP relaxation. It applies to polyhedral representations
+    and mixed-integer sets.
+
+    **Applications**:
+    Lift-and-project cuts are effective in solving **combinatorial optimization** problems such as
+    (1) **Traveling salesperson problems**
+    (2) **Set covering and packing**
+    (3) **Knapsack problems**
+    These problems involve binary decisions, and lift-and-project cuts help enforce the integrality of variables more strongly than standard linear
+    programming relaxations.
+
+    **Computational considerations**:
+    Generating lift-and-project cuts requires solving an additional linear program that is about double the size of the original LP relaxation,
+    making them computationally expensive.  Although they can significantly tighten LP relaxations and improve solution quality, their high
+    computational cost means they are typically applied selectively.
+
+- name: "Mixed Integer Rounding (MIR)"
+  solvers:
+    "Gurobi": "MIRCuts"
+    "SCIP": "cmir"
+  description: >
+    ### Mixed-Integer Rounding (MIR) Cutting Planes:
+
+    **What They Are**:
+    MIR cuts are a class of cutting planes derived from mixed-integer sets, particularly when dealing with constraints that include both
+    continuous and integer variables. The main idea behind MIR cuts is to generate valid inequalities by rounding coefficients of mixed-integer
+    constraints to tighten the LP relaxation. They are generated using a disjunctive argument, which creates inequalities that separate fractional
+    solutions from the feasible region of the MIP.
+
+    **Constraints/Structures They Operate On**:
+    MIR cuts operate on mixed-integer linear constraints, specifically on constraints of the form ( a^T x + y < b ), where (x) represents the
+    integer variables and (y) the continuous variables. They are particularly effective for problems where constraints involve a mix of integer
+    and continuous variables. MIR cuts can be applied to general MIP formulations and can be adapted to specific problem structures like knapsack sets.
+
+    **Applications**:
+    MIR cuts are useful in various applications, including:
+    (1) **Knapsack Problems**: Where they help in generating tighter constraints for 0-1 knapsack and mixed knapsack problems.
+    (2) **General Mixed-Integer Programming**: MIR cuts enhance the formulation by improving the linear relaxation.
+    (3) **Logistics and Supply Chain Problems**: Useful in problems that involve mixed constraints on resources, capacities, and logistics decisions.
+
+    **Computational considerations**:
+    MIR cuts are computationally efficient relative to some other cutting-plane methods. They provide a good balance between the strength of
+    the cut and the computational effort required to generate them. This efficiency arises because MIR cuts can often be generated from basic
+    properties of the mixed-integer constraints without needing complex separation algorithms."
+
+- name: "Mixing"
+  solvers:
+    "Gurobi": "MixingCuts"
+  description: >
+    ### Mixing Cutting Planes:
+
+    **What They Are**:
+    Mixing cutting planes originate from the *mixing set*, which is a generalization of the well-known *Mixed Integer Rounding (MIR)* procedure. 
+
+    **Constraints/Structures They Operate On**:
+    These inequalities are typically applied when dealing with multiple constraints (rows) that are aggregated to form a stronger cut than
+    what a single row could produce. They generalize the MIR cuts by considering several rows at once.
+
+    **Applications**:
+    Mixing cuts are particularly useful in:
+    (1) **Lot sizing problems**: Where inventory or production decisions are made over time.
+    (2) **Capacitated facility location**: Optimizing where to locate facilities to minimize costs.
+    (3) **Capacitated network design**: Optimizing the capacity and flow in networks (e.g., telecommunications or transportation).
+    These types of problems involve integer variables and often require aggregating multiple constraints, making mixing cuts more effective than
+    simpler methods.
+
+    **Computational Considerations**:
+    Mixing cuts tend to be of high MIR rank, meaning they involve aggregating more than one constraint row. This makes them computationally more 
+    complex but yields stronger cuts. According to computational studies, mixing cuts can have moderate to small improvements in performance. 
+    For example, disabling mixing cuts only increases solve time by a small percentage (e.g., 1.7% for hard models), but they still contribute
+    to performance improvement for difficult-to-solve models. 
+
+- name: "Modk"
+  solvers:
+    "Gurobi": "ModKCuts"
+  description: >
+    ### Modk Cutting Planes:
+
+    **What They Are**:
+    Modk cutting planes are derived from modular arithmetic principles, specifically leveraging *divisibility and congruence* properties to eliminate
+    infeasible solutions.
+
+    **Constraints/Structures They Operate On**:
+    Modk cuts focus on integer variables in a MIP model and apply congruence relations that must be satisfied for a solution to be integer-feasible.
+    By adding cuts based on divisibility (mod k) conditions, these cuts can eliminate non-integral solutions that violate specific divisibility rules,
+    leading to a tighter integer solution space.
+
+    **Applications**:
+    Modk cuts are particularly useful in:
+    (1) **Scheduling problems**: Where time slots or resources must be allocated in integer units.
+    (2) **Knapsack problems**: Ensuring items fit within capacity constraints without fractional quantities.
+    (3) **Integer-based optimization models**: Where specific divisibility conditions are essential for feasibility, such as production lot sizes
+    or team allocation problems.
+    These cuts are most effective in integer programming problems where divisibility rules impact feasible solutions.
+
+    **Computational Considerations**:
+    Modk cuts require identifying divisibility patterns in integer variables, which can add computational overhead. Modk cuts generally have a moderate
+    impact on performance, being more beneficial in highly integer-constrained models. Disabling modk cuts could increase solve times, but they are 
+    particularly useful for models where divisibility rules are frequently violated in relaxed solutions.
+
+- name: "Network"
+  solvers:
+    "Gurobi": "NetworkCuts"
+  description: >
+    ### Network Cutting Planes:
+
+    **What They Are**:
+    Network cutting planes leverage *network flow structures* within MIP models to improve convergence toward integer solutions.
+
+    **Constraints/Structures They Operate On**:
+    Network cuts identify flow-like structures in a MIP model, where variables represent flows between nodes (e.g., supply chain, logistics). The cuts
+    use properties of these flow structures, such as conservation of flow, demand fulfillment, and capacity constraints.
+
+    **Applications**:
+    Network cuts are particularly beneficial in:
+    (1) **Supply chain optimization**: Ensuring feasible flows that meet production, transport, and demand constraints.
+    (2) **Transportation and logistics**: Managing feasible routing and capacity in a network.
+    (3) **Capacitated network design**: Optimizing flows in infrastructure networks, like telecommunications or electricity grids.
+    These problem types often involve network flow structures, making network cuts highly effective.
+
+    **Computational Considerations**:
+    Gurobi’s network cuts automatically detect flow-based substructures in the model. While this can add computational complexity, it often reduces solve
+    time significantly by removing infeasible solutions early. Network cuts generally yield a positive impact on performance, particularly in problems with
+    prominent flow structures, improving solution times for complex or large-scale MIP models.
+
+- name: "RelaxLift"
+  solvers:
+    "Gurobi": "RelaxLiftCuts"
+  description: >
+    ### RelaxLift Cutting Planes:
+
+    **What They Are**:
+    RelaxLiftCuts are based on the concept of *relaxation and lifting*, where the relaxation of certain constraints is 'lifted' into stronger 
+    inequalities that tighten the feasible region.
+
+    **Constraints/Structures They Operate On**:
+    Relaxing a constraint means removing some of its strictness to make the problem easier to solve. Relaxation often leads to a linear or continuous 
+    relaxation of an otherwise integer-constrained problem. Lifting refers to taking the relaxed solution space and adding additional variables or 
+    constraints, effectively 'lifting' the solution back toward a more restrictive integer solution. The idea is to create stronger cuts based on
+    the relaxed model. These cuts are generated by considering the relaxation of the integer variables and then lifting the problem back into the
+    integer space.
+
+    **Applications**:
+    RelaxLift cuts are particularly effective in:
+    (1) **Combinatorial optimization problems**: Where integer solutions are required, such as the **Knapsack problem**, **Vehicle Routing Problem**, 
+    or **Set Partitioning**.
+    (2) **Facility location problems**: Where the location of facilities must be optimized, often with binary decision variables and constraints.
+    (3) **Quadratic or nonlinear MIP problems**: Where nonlinearities or quadratic terms are present, and the problem requires stronger cuts to 
+    efficiently navigate the feasible region.
+    These problems benefit from the ability to combine relaxations and lifting to form stronger cuts that can eliminate infeasible fractional solutions.
+
+    **Computational Considerations**:
+    RelaxLift cuts typically require solving a relaxed version of the original MIP problem, followed by a lifting process. This can add computational 
+    overhead, especially in large models, but results in stronger cuts that significantly reduce the number of branch-and-bound nodes. They are
+    particularly helpful in large-scale MIP models with complex combinatorial structures, but their impact may be less pronounced in simpler problems
+    where standard cuts are more effective.
+
+- name: "SubMIP"
+  solvers:
+    "Gurobi": "SubMIPCuts"
+  description: >
+    ### SubMIP Cutting Planes:
+
+    **What They Are**:
+    SubMIP Cuts solve a relaxed version of the original problem within a subproblem framework.
+
+    **Constraints/Structures They Operate On**:
+    SubMIP cuts are derived from solving smaller, relaxed versions of the original MIP problem, referred to as *subMIPs*. These subproblems are
+    typically easier to solve since they involve a subset of the variables or constraints from the full problem. After solving the subproblem,
+    the solver generates cuts that are valid for the larger original problem. These cuts are used to exclude fractional solutions found in the
+    subproblem from the solution space of the main problem, tightening the feasible region.
+
+    **Applications**:
+    SubMIP cuts are particularly beneficial in:
+    (1) **Large-scale MIP problems**: Where solving the entire problem directly is computationally expensive, and breaking the problem into
+    smaller subproblems helps reduce complexity.
+    (2) **Branch-and-bound trees**: SubMIP cuts can be used within branch-and-bound algorithms to prune the tree by cutting off infeasible
+    subtrees.
+    (3) **Decomposable MIP problems**: Problems that can be naturally decomposed into smaller subproblems, such as **facility location**, 
+    **scheduling**, or **network design**.
+    These problems often benefit from subproblem-based cuts because they allow the solver to focus on smaller, more manageable pieces of
+    the overall problem.
+
+    **Computational Considerations**:
+    Generating SubMIP cuts involves solving additional subproblems, which can introduce computational overhead. However, these cuts can 
+    significantly reduce the search space and thus improve overall performance by eliminating large infeasible regions, particularly 
+    for problems with large feasible regions or complex constraints. Their effectiveness increases when there is a clear structure 
+    that allows for meaningful decompositions of the problem into subMIPs.
+
+- name: "Strong Chvatal-Gomory"
+  solvers:
+    "Gurobi": "StrongCGCuts"
+    "SCIP": "strongcg"
+  description: >
+    ### Strong Chvátal-Gomory Cutting Planes:
+
+    **What They Are**:  
+    Strong Chvátal-Gomory (CG) cutting planes are an extension of the classical CG cuts, which are derived from valid inequalities of the
+    linear relaxation of an integer programming problem. These cuts are used to iteratively tighten the LP relaxation by adding inequalities
+    that exclude fractional solutions. The strong variant refers to CG cuts that are particularly effective in reducing the feasible region,
+    leading to a faster convergence to the integer solution.
+
+    **Constraints/Structures They Operate On**:  
+    Strong CG cuts can operate on general mixed-integer programming (MIP) problems, especially those involving linear constraints. They work
+    well on integer polyhedra, where the constraints are linear, and the variables are a mix of continuous and integer types. The method is
+    particularly powerful in settings where the linear relaxation provides a weak approximation of the integer hull.
+
+    **Applications**:  
+    (1) **General Integer and Mixed-Integer Programming (MIP)**: Useful across various applications, including combinatorial optimization, 
+    scheduling, and resource allocation.
+    (2) **Set Partitioning Problems**: Where integer solutions are crucial, such as in crew scheduling or vehicle routing problems.
+    (3) **Knapsack Problems**: Where fractional solutions need to be eliminated efficiently.
+
+    **Computational considerations**:  
+    Computing strong CG cuts can be computationally demanding because they require solving additional linear programs and possibly multiple
+    rounds of cutting plane generation. The separation problem (finding the most violated CG cut) can be NP-hard, making the process more
+    complex for large-scale problems. However, the strength of the cuts often justifies the computational effort, as they significantly
+    reduce the solution space and improve solver performance.
+
+- name: "Zero-Half"
+  solvers:
+    "Gurobi": "ZeroHalfCuts"
+    "SCIP": "zerohalf"
+  description: >
+    ### Zero-Half Cutting Planes:
+
+    **What They Are**:
+    Zero-half cuts are a specific type of Chvátal-Gomory (CG) cuts in integer programming. These cuts are derived using coefficients in {0, 1/2}
+    instead of integer coefficients. They are used to tighten the relaxation of integer programming problems, bringing it closer to the convex hull
+    of feasible integer solutions.
+
+    **Constraints/Structures They Operate On**:
+    Zero-half cuts are useful in settings where constraints can be weakened (e.g., using LU-weakening), leading to polyhedra where standard methods
+    may be insufficient. They can be applied to systems of inequalities where coefficients are integers, and often in cases where the matrix involved
+    has special structures like tree-based systems or network matrices.
+
+    **Applications**:
+    Zero-half cuts are particularly relevant in:
+    (1) **Clique Partitioning Polytopes**: Useful in optimal clustering problems where the goal is to partition a graph into cliques.
+    (2) **Asymmetric Traveling Salesman Problem (ATSP)**: Applied to improve the efficiency of branch-and-cut algorithms for solving real-world instances.
+    (3) **Uncapacitated Plant Location Problem**: Used for finding optimal facility locations with constraints on connections between facilities and customers.
+    (4) **Acyclic Subgraph and Linear Ordering Polytopes**: Employed in optimizing ordering and subgraph structures, particularly in directed graphs
+
+- name: "Project Implied Bound Cuts"
+  solvers:
+    "Gurobi": "ProjImpliedCuts"
+  description: >
+    ### Projected Implied Bound (PIB) Cuts:
+
+    **What They Are**:
+    Projected Implied Bound (PIB) cuts leverage implications between binary and continuous variables to tighten the linear programming (LP) relaxation.
+
+    **Constraints/Structures They Operate On**:
+    Given a binary variable z in (0, 1)  and a continuous variable x with bounds, there may be an implication like z = 0 -> x <= b . The implied bound
+    cut uses this implication to restrict the solution space by enforcing the constraint  ( x  leq b + (u - b)z  ) where  ( u  ) is the upper bound of  ( x  ).
+    PIBs extend basic implied bound cuts by partitioning the variables into sets with different implications. For instance, if binary variable  ( z = 0  ),
+    some variables  ( x  ) are forced to be small, while if  ( z = 1  ), other variables are relaxed. By projecting these implications onto the feasible
+    space of the LP relaxation, stronger cuts are generated.
+
+    **Applications**:
+    Projected implied bound cuts are particularly effective in problems where binary variables have direct control over continuous variables. These include:
+    (1) **Network design**: Where binary variables may indicate whether a network element (e.g., a node or edge) is active, which impacts the bounds on flow
+    or capacity.
+    (2) **Production planning**: Binary variables representing on/off decisions (e.g., whether a machine is running) affect the capacity or output, leading to
+    potential implications between continuous production levels and binary decisions.
+    (3) **Facility location**: Similar to network design, binary variables (representing open/close decisions) can imply bounds on continuous variables
+    related to demand or capacity.
+
+    **Computational Considerations**:
+    PIB cuts are generally lightweight to compute and can be effective at tightening the LP relaxation, but their performance varies. In computational experiments, 
+    disabling these cuts results in a modest performance degradation (e.g., about 1.3% increase in solution time for medium-difficulty models), suggesting they 
+    are computationally efficient. The separation process for PIB cuts involves checking implications across the model's constraints and determining which variables
+    should be in different sets. This step can be computationally expensive if the number of variables is large, but it is often worth the effort for models with
+    significant binary-continuous variable interactions.
+
+- name: "Disjunctive"
+  solvers:
+    "SCIP": "disjunction"
+  description: > 
+    ### Disjunctive Cutting Planes:
+
+    **What They Are**:  
+    Disjunctive cuts are a class of cutting planes used in mixed-integer programming, particularly based on the concept of disjunctions. These cuts are derived 
+    from a disjunctive argument that partitions the solution space into different disjunctive sets. By analyzing the infeasible or fractional solutions that arise 
+    from linear relaxations, disjunctive cuts can tighten the formulation by excluding these solutions and enforcing integrality conditions more strongly.
+
+    **Constraints/Structures They Operate On**:  
+    Disjunctive cuts work on disjunctions, typically involving binary or integer variables. A common structure is to partition the feasible region of a problem into 
+    multiple polyhedra, based on conditions like ( x = 0 ) or ( x = 1 ) for binary variables. The cut is generated by focusing on the convex hull of feasible solutions 
+    in the disjunction, making this method effective in problems with complex logical or combinatorial structures.
+
+    **Applications**:  
+    - **Combinatorial Optimization**: Disjunctive cuts are frequently used in problems where decisions are represented by binary variables, such as scheduling, assignment, and routing problems.
+    - **Branch-and-Cut Algorithms**: These cuts are often incorporated into branch-and-cut methods to strengthen relaxations and improve solution times.
+    - **General Mixed-Integer Programming**: Disjunctive cuts can be applied to any MIP that involves binary or integer variables with logical constraints.
+
+    **Computational Demand**:  
+    The generation of disjunctive cuts can be computationally expensive because it involves solving additional linear programs to identify the disjunctive sets 
+    and find the convex hull. The complexity depends on the structure of the disjunction and the number of terms involved. However, when applied selectively, 
+    disjunctive cuts can significantly improve the quality of the LP relaxation without a prohibitive increase in computation time.
+
+- name: "ConvexProjection"
+  solvers:
+    "SCIP": "convexprojection"
+  description: >
+    ### Convex Projection Cutting Planes:
+
+    **What They Are**:  
+    Convex projection cuts are generated by projecting an infeasible point (x0) onto a convex relaxation of the problem and then creating gradient-based cuts 
+    at the projection point. These cuts are designed to improve the separation of fractional solutions in convex nonlinear programs. The method aims to enhance 
+    the solver's ability to make progress by refining the feasible region through gradient information at the projected point.
+
+    **Constraints/Structures They Operate On**:  
+    Convex projection cuts are particularly useful in problems involving convex nonlinear constraints. They are effective in cases where the solver struggles 
+    with slow progress during the separation process, as the cuts can tighten the relaxation by focusing on the projected convex region. This technique is mostly 
+    relevant in convex mixed-integer nonlinear programming (MINLP) problems, where nonlinearities in the feasible region can lead to challenging separations.
+
+    **Applications**:  
+    - **Convex Nonlinear Programming**: Useful in convex MINLP problems, especially where the problem has a significant number of convex nonlinear constraints.
+    - **General Mixed-Integer Nonlinear Programming (MINLP)**: Applicable in any scenario where the problem structure includes convex relaxations and requires stronger cuts for better separation.
+    - **Difficult Instances with Slow Progress**: Convex projection cuts can be helpful in instances where the solver gets stuck in the separation loop without substantial improvement.
+
+    **Computational Demand**:  
+    Generating convex projection cuts involves projecting points onto a convex relaxation and computing gradient cuts, which can be computationally demanding. 
+    The complexity increases with the nonlinearity of the constraints and the size of the convex region. These cuts are computationally intensive and are often 
+    disabled by default, but they can be valuable for specific problems where other cuts fail to improve the relaxation.
+
+- name: "IntegerObjective"
+  solvers:
+    "SCIP": "integerobjective"
+  description: >
+    ### Integer Objective Cutting Planes:
+
+    **What They Are**:  
+    Integer objective cuts are cutting planes used in mixed-integer programming (MIP) when the objective function is integer-valued. These cuts aim to eliminate 
+    fractional solutions from the LP relaxation that are not feasible in the integer solution space. They help tighten the LP relaxation by leveraging the fact 
+    that certain fractional values of the objective function cannot lead to valid integer solutions.
+
+    **Constraints/Structures They Operate On**:  
+    These cuts are applied in problems where the objective function is guaranteed to take integer values, and the goal is to rule out fractional solutions. 
+    The structure is especially relevant when the LP relaxation produces fractional objective values that can never be achieved by an integer solution. This 
+    is common in problems like set partitioning, assignment, and scheduling, where the objective represents counts or other discrete measures.
+
+    **Applications**:  
+    - **Set Partitioning and Covering Problems**: Where the objective is to minimize or maximize an integer count (e.g., the number of selected items).
+    - **Assignment Problems**: Useful in problems where the objective represents integer-valued decisions, such as assigning resources to tasks.
+    - **General MIP**: Effective in any MIP where the objective function is integer-valued, helping improve the gap between the LP relaxation and the optimal integer solution.
+
+    **Computational Demand**:  
+    Integer objective cuts are relatively efficient to generate as they directly target fractional solutions in the LP relaxation that violate the integrality 
+    of the objective. While the computational overhead is minimal compared to more complex cuts, their impact is significant in reducing the gap between the LP 
+    relaxation and the integer solution, making them valuable in many MIP instances.
+
+- name: "Gomory"
+  solvers:
+    "SCIP": "gomory"
+  description: >
+    ### Gomory Cutting Planes:
+
+    **What They Are**:  
+    Gomory cutting planes are derived from the fractional solutions of the LP relaxation of a mixed-integer programming (MIP) problem. Once the LP relaxation 
+    is solved, any variable with fractional values can be targeted, and a Gomory cut is generated to eliminate these fractional solutions, moving the solution 
+    closer to integrality. These cuts can be generated iteratively during the branch-and-bound process to progressively tighten the LP relaxation.
+
+    **Constraints/Structures They Operate On**:  
+    Gomory cuts are applied to general MIP problems and operate on fractional variables in the LP relaxation. They are particularly useful when the LP relaxation 
+    produces fractional values that violate the integrality constraints of the original problem. These cuts are typically applied in conjunction with other 
+    cutting-plane methods to refine the feasible region.
+
+    **Applications**:  
+    - **General MIP**: Gomory cuts are widely applicable in mixed-integer programming for reducing the gap between the LP relaxation and the optimal integer solution.
+    - **Branch-and-Cut Algorithms**: Often used as part of branch-and-cut solvers to tighten the linear relaxation iteratively.
+
+    **Computational Demand**:  
+    While Gomory cuts are computationally efficient to generate and can significantly improve the LP relaxation, they are usually applied selectively due to 
+    diminishing returns from repeated cut generation. Using them too frequently may increase the computational burden without proportionate improvements.
+
+- name: "Chvatal-Gomory (CG)"
+  solvers:
+    "SCIP": "cgmip"
+  description: > 
+    ### Chvatal-Gomory (CG) Cutting Planes:
+
+    **What They Are**:  
+    Chvatal-Gomory cuts are generated by forming non-negative integer combinations of the original linear constraints and then rounding the resulting 
+    coefficients to produce a valid inequality. These cuts are designed to tighten the LP relaxation by eliminating fractional solutions. The process 
+    involves solving a sub-MIP to identify the best combination of constraints, which ensures that the generated cuts are as effective as possible.
+
+    **Constraints/Structures They Operate On**:  
+    Chvatal-Gomory cuts operate on the entire constraint set of an MIP problem. They are particularly effective for problems with a large number of 
+    linear constraints, as the cuts are formed by combining and rounding these constraints. This makes them useful in any problem where the integrality 
+    of variables is critical and the LP relaxation needs further refinement.
+
+    **Applications**:  
+    - **General Mixed-Integer Programming (MIP)**: Chvatal-Gomory cuts are applicable to any MIP formulation and are particularly effective in tightening LP relaxations.
+    - **Combinatorial Optimization**: Especially useful in combinatorial problems where binary and integer variables dominate.
+
+    **Computational Demand**:  
+    Generating Chvatal-Gomory cuts is more computationally demanding than basic Gomory cuts because it involves solving a sub-MIP to find the best 
+    combination of constraints. This additional complexity can lead to longer solve times, but the cuts generated are usually very effective at 
+    reducing the gap between the LP relaxation and the integer solution.
+
+- name: "Odd Cycle"
+  solvers:
+    "SCIP": "oddcycle"
+  description: >
+    ### Odd Cycle Cutting Planes:
+
+    **What They Are**:  
+    Odd cycle cuts are designed to eliminate infeasible fractional assignments in problems where binary variables represent nodes or edges in a graph. 
+    They are particularly effective when dealing with cycles in a graph that contain an odd number of nodes. For example, in a graph-based problem, 
+    assigning fractional values (like 0.5) to all variables in an odd cycle is infeasible when the solution must be binary (0 or 1). Odd cycle cuts 
+    ensure that such fractional solutions are excluded from the feasible region.
+
+    **Constraints/Structures They Operate On**:  
+    Odd cycle cuts are typically applied to binary integer programming problems, particularly those that can be modeled using graphs. The structure 
+    involves identifying odd cycles in the graph and generating cuts that eliminate infeasible fractional solutions within these cycles. This is 
+    especially useful in problems involving assignment, routing, or network design where binary decisions must be made.
+
+    **Applications**:  
+    - **Graph-Based Problems**: Odd cycle cuts are effective in problems like the traveling salesman problem, graph coloring, and network design, where cycles in a graph play a key role.
+    - **Binary Integer Programming**: Any problem involving binary decision variables can potentially benefit from odd cycle cuts, especially when it can be represented as a graph.
+
+    **Computational Demand**:  
+    The process of identifying odd cycles and generating cuts is computationally manageable, though it may become more demanding in dense graphs 
+    with many potential cycles. However, the strength of these cuts in eliminating infeasible solutions often justifies their computational cost.
+
+- name: "Rapid Learning"
+  solvers:
+    "SCIP": "rapidlearning"
+  description: >
+    ### Rapid Learning Cutting Planes:
+
+    **What They Are**:  
+    Rapid learning is a heuristic technique that temporarily relaxes certain constraints or simplifies the problem to solve a more manageable version. 
+    By solving this easier problem, the solver gains insights into the structure of the original problem. The rapid learning separator then uses this 
+    information to generate useful cuts or constraints that can immediately improve the quality of the LP relaxation in the original problem.
+
+    **Constraints/Structures They Operate On**:  
+    Rapid learning operates on general mixed-integer programming (MIP) problems and can be applied to both binary and continuous variables. It is 
+    particularly useful when there are patterns or structural insights that can be derived from a simplified version of the problem, such as identifying 
+    critical variables or constraints that impact the solution quality.
+
+    **Applications**:  
+    - **General MIP**: Rapid learning cuts are versatile and applicable in a wide range of MIP problems. They are especially effective when the problem is large and complex, as the heuristic simplifies the problem to reveal useful patterns or cuts.
+    - **Heuristic Solvers**: This technique is well-suited for problems where full optimization is computationally expensive, but a heuristic can provide good initial insights.
+
+    **Computational Demand**:  
+    The computational demand of rapid learning is generally low, as it involves solving a simplified version of the problem. However, the strength of 
+    the cuts or constraints derived from rapid learning can vary depending on how well the simplification captures the critical features of the original 
+    problem. Since this is a heuristic method, the trade-off between computational effort and the quality of the cuts generated should be considered. 
+    The process can significantly reduce the number of iterations required to solve the full problem.

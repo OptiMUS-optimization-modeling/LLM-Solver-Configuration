@@ -1,0 +1,21 @@
+# This file may be used to create an environment using:
+# $ conda create --name <env> --file <this file>
+# platform: osx-arm64
+gurobipy
+ipython
+joblib
+# jupyter_client==8.6.2
+# jupyter_core==5.7.2
+matplotlib
+numpy
+openai==1.42.0
+pandas
+pydantic
+pyscipopt
+python-dotenv
+pyyaml
+tqdm
+setuptools
+scikit-learn-extra
+networkx
+
